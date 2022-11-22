@@ -76,12 +76,30 @@ int main() {
 			if (socket == ServerSocket) {
 				SOCKET client = accept(ServerSocket, nullptr, nullptr);
 				FD_SET(client, &Master);
-				std::string test = "Accepted request";
+				std::string test = "The server has accepted your request \n";
 
 				send(client, test.c_str(), test.size(), +1);
 			}
 			else {
+				char buffer[4096];
+				ZeroMemory(buffer, 4096);
 
+
+
+				int BytesRecieved = recv(socket, buffer, 4096, 0);
+				if (BytesRecieved <= 0) {
+					closesocket(socket);
+					FD_CLR(socket, &Master);
+				}
+				else {
+					//Recieved message from client, processdata and send an update back
+					for (int i = 0; i < Master.fd_count; i++) {
+						SOCKET SockOut = Master.fd_array[i];
+						if (SockOut != ServerSocket && SockOut != socket) {
+							send(SockOut, buffer, BytesRecieved, 0); //0 stands for broadcast
+						}
+					}
+				}
 			}
 		}
 	}
