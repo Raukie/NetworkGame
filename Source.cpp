@@ -80,8 +80,8 @@ int main() {
 				std::string res = "The server has accepted your request, id:";
 				
 				res.append(std::to_string(id));
-				res.append(";");
-
+				res.append(";;;");
+				id++;
 				send(client, res.c_str(), res.size(), +1);
 			}
 			else {
