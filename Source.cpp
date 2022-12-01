@@ -4,6 +4,7 @@
 #include <WS2tcpip.h>
 #include <tchar.h>
 #include <windows.h>
+#include <string>
 //wsa version
 #define SCK_VERSION2 0x0202 //version 2
 #define DEFAULT_PORT 55555;
@@ -63,7 +64,7 @@ int main() {
 	fd_set Master;
 	FD_ZERO(&Master);
 	FD_SET(ServerSocket, &Master);
-
+	int id = 0;
 	while (true) {
 		fd_set copy = Master;
 
@@ -76,9 +77,12 @@ int main() {
 			if (socket == ServerSocket) {
 				SOCKET client = accept(ServerSocket, nullptr, nullptr);
 				FD_SET(client, &Master);
-				std::string test = "The server has accepted your request \n";
+				std::string res = "The server has accepted your request, id:";
+				
+				res.append(std::to_string(id));
+				res.append(";");
 
-				send(client, test.c_str(), test.size(), +1);
+				send(client, res.c_str(), res.size(), +1);
 			}
 			else {
 				char buffer[4096];
@@ -96,7 +100,7 @@ int main() {
 					for (int i = 0; i < Master.fd_count; i++) {
 						SOCKET SockOut = Master.fd_array[i];
 						if (SockOut != ServerSocket && SockOut != socket) {
-							send(SockOut, buffer, BytesRecieved, 0); //0 stands for broadcast
+							send(SockOut, buffer, BytesRecieved, 0); 
 						}
 					}
 				}
